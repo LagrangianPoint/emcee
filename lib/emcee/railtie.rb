@@ -9,16 +9,16 @@ require "emcee/resolver"
 module Emcee
   class Railtie < Rails::Railtie
     initializer :add_asset_paths do |app|
-      app.assets.paths.unshift(Rails.root.join("vendor", "assets", "components"))
+      app.config.assets.paths.unshift(Rails.root.join("vendor", "assets", "components"))
     end
 
     initializer :add_preprocessors do |app|
-      app.assets.register_mime_type "text/html", ".html"
-      app.assets.register_preprocessor "text/html", Emcee::DirectiveProcessor
+      app.config.assets.register_mime_type "text/html", ".html"
+      app.config.assets.register_preprocessor "text/html", Emcee::DirectiveProcessor
     end
 
     initializer :add_postprocessors do |app|
-      app.assets.register_postprocessor "text/html", :web_components do |context, data|
+      app.config.assets.register_postprocessor "text/html", :web_components do |context, data|
         doc = Emcee::Document.new(data)
         resolver = Emcee::Resolver.new(context)
         Emcee::Processors::ImportProcessor.new(resolver).process(doc)
@@ -29,7 +29,7 @@ module Emcee
     end
 
     initializer :add_compressors do |app|
-      app.assets.register_bundle_processor "text/html", :html_compressor do |context, data|
+      app.config.assets.register_bundle_processor "text/html", :html_compressor do |context, data|
         Emcee::Compressors::HtmlCompressor.new.compress(data)
       end
     end
